@@ -2,7 +2,7 @@
 ### Zanita OS ###
 #################
 
-# by Miles Smith
+# toy OS by Miles Smith
 
 var zanos.keyword
 var zanos.operand
