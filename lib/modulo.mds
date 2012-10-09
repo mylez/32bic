@@ -1,0 +1,46 @@
+jump modulo.endoffile
+
+############## 
+### MODULO ###
+##############
+# by Miles Smith
+# For finding modulo of D / E
+
+python print('*Reminder: modulo.mds requires stack.mds')
+# Requires stack.mds
+# D is rd
+# E is re
+
+
+var modulo.returnaddress
+
+### modfunct
+point modulo
+printl running modulo
+
+
+ram write rf modulo.returnaddress
+
+# pop D and E from the stack
+call opstack.pop
+mov re rd
+call opstack.pop
+
+# Check to see if D == 0 or E == 0 or D < E
+put rc 0
+#printl checking to see if D or E == 0 or E < D
+jump equals rd rc modfunctend
+jump equals re rc modfunctend
+jump lesser re rd modfunctend
+#printl they are not
+
+alu / re rd rd
+alu - re rd re
+
+# Result will be in E register
+point modfunctend
+
+ram read rf modulo.returnaddress
+return
+
+point modulo.endoffile

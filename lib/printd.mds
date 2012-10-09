@@ -1,0 +1,71 @@
+jump printd.endoffile
+
+##############
+### PRINTD ###
+##############
+# by Miles Smith
+
+var printd.returnaddress
+var printd.signbit
+
+#### FUNCTION CALL
+#### OPERANDS: SIGNED INT rE
+#### RETURNS VOID
+	point printd.signed
+	ram write rF printd.returnaddress
+	put r7 1	
+	put rD -1
+	jump greater rE rD printd.unsigned
+
+	alu * rE rD rB
+	put r1 1
+	ram write r1 printd.signbit
+	put rA 10
+	jump printd.main
+
+#### FUNCTION CALL
+#### OPERANDS: UNSIGNED INT (rE)
+#### RETURNS VOID
+	point printd.unsigned
+	ram write rF printd.returnaddress
+	put r7 1
+	mov rE rB
+	put rA 10
+
+point printd.main
+	alu / rB rA rD
+	alu * rD rA rD
+	alu - rB rD rE
+	
+	put r1 0b110000
+	alu + rE r1 rE
+	call opstack.push rE
+	alu / rD rA rB
+	put r0 1
+	alu + r7 r0 r7
+	put r0 0
+	jump equals rB r0 printd.output
+	jump printd.main
+
+	
+point printd.output
+	ram read r0 printd.signbit
+	put r1 1
+	jump notequals r0 r1 printd.poploop
+	put rE 45
+	output rE
+	point printd.poploop
+	put r0 0
+	alu - r7 r1 r7
+	jump equals r7 r0 printd.eof
+	call opstack.pop
+	output rE
+	jump printd.poploop
+
+point printd.eof
+	put rE 0
+	ram write rE printd.signbit
+	ram read rF printd.returnaddress
+	return
+
+point printd.endoffile

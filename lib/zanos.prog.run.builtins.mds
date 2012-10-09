@@ -1,0 +1,510 @@
+jump zanos.prog.run.builtins.endoffile
+
+################
+### BUILTINS ###
+################
+
+# A library of built-in programs for "run" command in Zanita OS
+
+############
+### TEXT ###
+############
+
+# zText basic text notepad
+
+point zanos.prog.run.text
+
+	var zanos.prog.run.text.bank1
+	var zanos.prog.run.text.bank1hist
+
+	var zanos.prog.run.text.bank2
+	var zanos.prog.run.text.bank2hist
+
+	var zanos.prog.run.text.bank3
+	var zanos.prog.run.text.bank3hist
+
+	out16 0x8000
+	printl Welcome to zText!
+	printl (c) 2011 by Miles Smith
+	printl Choose memory bank 1, 2, or 3 to begin editing.
+	printl Press "h" for zText help or "q" to quit.
+	point zanos.prog.run.text.getbank
+	print txt> 
+	put r1 0b110000
+	halt
+	input r0
+	output r0
+	printl
+
+	alu - r0 r1 r0
+
+	put r1 1
+	jump equals r0 r1 zanos.prog.run.text.chosebank1
+	put r1 2
+	jump equals r0 r1 zanos.prog.run.text.chosebank2
+	put r1 3
+	jump equals r0 r1 zanos.prog.run.text.chosebank3
+	put r1 0b111000
+	jump equals r0 r1 zanos.prog.run.text.help
+	put r1 0b1000001
+	jump equals r0 r1 zanos.prog.run.text.exit
+
+
+	printl Error: not a valid memory bank
+	jump zanos.prog.run.text.getbank
+
+	point zanos.prog.run.text.chosebank1
+		put r1 0
+		ram read r0 zanos.prog.run.text.bank1hist
+		jump notequals r0 r1 zanos.prog.run.text.b1used
+		printl preparing empty bank...
+		call string.init(1500)
+		ram write rE zanos.prog.run.text.bank1
+		call string.conc(10, var:zanos.prog.run.text.bank1)
+		put r1 1
+		ram write r1 zanos.prog.run.text.bank1hist
+
+	point zanos.prog.run.text.b1used
+		out16 0x8000
+
+		printl               [zText MemBank 1]
+
+		call string.print (var:zanos.prog.run.text.bank1)
+		put r0 0
+		mar write rE
+		ram write r0
+			
+			
+	point zanos.prog.run.text.b1conc
+		halt
+		input r5
+		output r5
+		call string.conc(r5, var:zanos.prog.run.text.bank1)
+		put r1 10
+		jump equals r5 r1 zanos.prog.run.text.exit
+		jump zanos.prog.run.text.b1conc
+
+	point zanos.prog.run.text.chosebank2
+		put r1 0
+		ram read r0 zanos.prog.run.text.bank2hist
+		jump notequals r0 r1 zanos.prog.run.text.b2used
+		printl preparing empty bank...
+		call string.init(1500)
+		ram write rE zanos.prog.run.text.bank2
+		call string.conc(10, var:zanos.prog.run.text.bank2)
+		put r1 1
+		ram write r1 zanos.prog.run.text.bank2hist
+
+	point zanos.prog.run.text.b2used
+		out16 0x8000
+
+		printl               [zText MemBank 2]
+
+		call string.print (var:zanos.prog.run.text.bank2)
+		put r0 0
+		mar write rE
+		ram write r0
+			
+			
+	point zanos.prog.run.text.b2conc
+		halt
+		input r5
+		output r5
+		call string.conc(r5, var:zanos.prog.run.text.bank2)
+		put r1 10
+		jump equals r5 r1 zanos.prog.run.text.exit
+		jump zanos.prog.run.text.b2conc
+
+	point zanos.prog.run.text.chosebank3
+		put r1 0
+		ram read r0 zanos.prog.run.text.bank3hist
+		jump notequals r0 r1 zanos.prog.run.text.b3used
+		printl preparing empty bank...
+		call string.init(1500)
+		ram write rE zanos.prog.run.text.bank3
+		call string.conc(10, var:zanos.prog.run.text.bank3)
+		put r1 1
+		ram write r1 zanos.prog.run.text.bank3hist
+
+	point zanos.prog.run.text.b3used
+		out16 0x8000
+
+		printl               [zText MemBank 3]
+
+		call string.print (var:zanos.prog.run.text.bank3)
+		put r0 0
+		mar write rE
+		ram write r0
+			
+			
+	point zanos.prog.run.text.b3conc
+		halt
+		input r5
+		output r5
+		call string.conc(r5, var:zanos.prog.run.text.bank3)
+		put r1 10
+		jump equals r5 r1 zanos.prog.run.text.exit
+		jump zanos.prog.run.text.b3conc
+
+	point zanos.prog.run.text.help
+		out16 0x8000
+		printl zText memory banks are special allocations of
+		printl system memory that save text projects. When a
+		printl memory bank has been selected, zText will
+		printl display the contents of that bank. Once the
+		printl text has been displayed, the file is freely
+		printl editable. To finish editing, simply press the
+		printl return key to save your project and exit.
+		printl        NEWLINE CHARS NOT SUPPORTED :(
+		printl Press any key to continue...
+		halt
+		input r0
+		out16 0x8000
+		printl SWEJIN! SAN FRANCISCO COCKSUCKA!
+		printl                                                        
+		out16 0x8000
+		jump zanos.prog.run.text.getbank
+		
+	point zanos.prog.run.text.exit
+		out16 0x8000
+		jump zanos.shell.newline
+
+#############
+### ports ###
+#############
+
+var port1
+var port2
+var ports.progspace
+var ports.beenrun
+
+point zanos.prog.run.ports
+out16 0x8000
+printl Welcome to ports!
+printl (c) 2011, Miles Smith
+printl press 'h' for help
+
+ram read r0 ports.beenrun
+put r1 1
+jump equals r0 r1 ports.checkport1
+
+printl preparing for first run...
+call array.init (500)
+ram write rE ports.progspace
+put r1 1
+ram write r1 ports.beenrun
+
+# check port 1 for boot code
+point ports.checkport1
+	put r0 0
+	ram write r0 port1
+	ram write r0 port2
+	channel data 1
+	channel address 0
+	put rA 0xb007c0de
+	input rB
+	jump notequals rA rB ports.checkport2
+	
+	# If port 1 has b007c0de, print "Port 1: [name]"
+	channel data 0
+	print Port 1: 
+	channel data 1
+	put r1 1
+	ram write r1 port1
+	point port1read
+	channel address increment
+	input r0
+	
+	# Output chars of name to port 0 (TTY screen)
+	channel data 0
+	output r0
+	channel data 1
+	put r1 10
+	jump notequals r0 r1 port1read
+	channel address increment
+	input r0
+	ram write r0 port1
+
+# check port 2 for boot code
+point ports.checkport2
+	channel data 2
+	channel address 0
+	put rA 0xb007c0de
+	input rB
+	jump notequals rA rB ports.cmdprep
+	
+	# If port 2 has b007c0de, print "Port 2: [name]"
+	channel data 0
+	print Port 2: 
+	channel data 2
+	put r1 1
+	ram write r1 port2
+	
+point port2read
+	channel address increment
+	input r0
+	
+	# Output chars of name to port 0 (TTY screen)
+	channel data 0
+	output r0
+	channel data 2
+	put r1 10
+	jump notequals r0 r1 port2read
+	channel address increment
+	input r0
+	ram write r0 port2
+
+# Command line interface prep
+point ports.cmdprep
+	channel data 0
+	ram read r1 port1
+	ram read r2 port2
+	alu + r1 r2 r1
+	alu + r2 r1 r1
+	put r0 0
+	jump equals r1 r0 ports.noboot
+	printl
+	
+# Command line interface
+point ports.cmd
+	print ports> 
+	halt
+	input r0
+	output r0
+	printl
+
+	# character '1'
+	put r1 0x31
+	jump equals r0 r1 ports.runfrom1
+
+	# character '2'
+	put r1 0x32
+	jump equals r0 r1 ports.runfrom2
+	
+	# lowercase 'r'
+	put r1 0x72
+	jump equals r0 r1 ports.checkport1
+
+	# lowercase 'q'
+	put r1 0x71
+	jump equals r0 r1 zanos.shell.newline
+
+	# lowercase 'h'
+	put r1 0x68
+	jump equals r0 r1 ports.help
+	
+	printl
+	printl not recognized; try 'h' for help
+	jump ports.cmd
+
+# No  devices on first scan
+point bioshelp
+point ports.noboot
+	printl No device found.
+	jump ports.cmd
+	
+point ports.help
+	printl
+	printl     ->[]   PORTS:  []->
+	printl An external device utility
+	printl press 1 to load and run from port 1
+	printl press 2 to load and run from port 2
+	printl press q to quit
+	printl press r to rescan ports
+	jump ports.cmd
+
+point ports.runfrom1
+point ports.runfrom2
+printl This will be program running function
+printl
+jump ports.cmd
+
+############
+### exec ###
+############
+point zanos.prog.run.exec
+	var exec.firstopen
+	var exec.backstack
+	var exec.hexplace
+	var exec.hexnumber
+	var exec.hexarray
+	var exec.arrayindex
+	var exec.loopbackaddress
+
+	ram read r0 exec.firstopen
+	put r1 1
+	jump equals r0 r1 exec.beginning
+	printl preparing on first run...
+	call stack.init (0x10)
+	ram write rE exec.backstack
+	call array.init (0x100)
+	ram write rE exec.hexarray
+	put r1 1
+	ram write r1 exec.firstopen
+
+point exec.beginning
+	printl Welcome to the EXEC Hex Editor
+	printl (c) 2011, by Miles Smith
+	
+	put r0 0x1
+	ram write r0 exec.hexplace
+	printl Type 'h' for help
+	
+	par read r0
+	put r1 0x10000
+	alu * r0 r1 r0
+	put r1 0x00c0
+	alu + r0 r1 r0
+	ram write r0 exec.loopbackaddress
+
+point exec.ioshell
+	printl
+	print exec> 
+	halt
+	input r0
+	output r0
+
+	# lowercase 'x'
+	put r1 0x78
+	jump equals r0 r1 exec.typehex
+	
+	# lowercase 'h'
+	put r1 0x68
+	jump equals r0 r1 exec.help
+
+	# lowercase 'q'
+	put r1 0x71
+	jump equals r0 r1 exec.end
+	
+	# lowercase 'i'
+	put r1 0x69
+	jump equals r0 r1 exec.raminfo
+	
+	printl
+	print Error: '
+	output r0
+	printl ' not valid command.
+	jump exec.ioshell
+
+point exec.typehex
+	ram read r0 exec.hexarray
+	ram write r0 exec.arrayindex
+
+	printl
+	print 0x: 
+
+point exec.stackloop
+	halt
+	input r0
+	output r0
+	put r1 0x20
+	jump equals r0 r1 exec.makehex
+	put r1 0xA
+	jump equals r0 r1 exec.beginexecution
+	call stack.push (r0, var:exec.backstack)
+	jump exec.stackloop
+	
+point exec.makehex
+	# If stack index == stack address, insert hex number to exec.hexarray
+	ram read r1 exec.backstack
+	mar write r1
+	ram read r2
+	jump equals r1 r2 exec.insertnumber
+	
+	# rA - Current digit
+	# rB - Current hex place
+	# rC - Result
+	# r1, r2 - Range for numerical symbols
+	
+	call stack.pop (var:exec.backstack)
+	mov rE rA
+	put r1 0x30
+	put r2 0x39
+	
+	jump greater rA r2 exec.checkalpha
+	jump lesser rA r1 exec.end
+	
+	# It's a numeric character.
+	
+	put r0 0b110000
+	alu - rA r0 rA
+	
+point exec.buildalphanumeric
+	# Multiply current digit by current
+	# hex place, add to hexnumber
+	ram read rB exec.hexplace
+	alu * rA rB rA
+	ram read rC exec.hexnumber
+	alu or rA rC rA
+	ram write rA exec.hexnumber
+
+	# Update exec.hexplace
+	put r0 0x10
+	alu * rB r0 rB
+	ram write rB exec.hexplace
+	jump exec.makehex
+
+point exec.insertnumber
+	ram read r0 exec.arrayindex
+	put r1 1
+	alu + r0 r1 r0
+	ram write r0 exec.arrayindex
+	call array.insert(var:exec.hexnumber, var:exec.arrayindex, var:exec.hexarray)
+	put r0 0
+	ram write r0 exec.hexnumber
+	put r0 1
+	ram write r0 exec.hexplace
+	jump exec.stackloop
+
+point exec.checkalpha
+	# Lowercase 'a' to lowercase 'f'
+	put r1 0x61
+	put r2 0x66
+	jump greater rA r2 exec.end
+	jump lesser rA r1 exec.end
+	
+	# It's a lowercase alpha char
+	put r0 0b1010111
+	alu - rA r0 rA
+
+	jump exec.buildalphanumeric
+
+point exec.beginexecution
+	printl begin execution
+	ram read r0 exec.arrayindex
+	put r1 1
+	alu + r0 r1 r0
+	ram write r0 exec.arrayindex
+	call array.insert(var:exec.loopbackaddress, var:exec.arrayindex, var:exec.hexarray)
+	
+	ram read r0 exec.hexarray
+	put r1 1
+	alu + r0 r1 r0
+	
+	exec ram r0
+
+point exec.help
+	printl
+	printl         c0de -> 1100000011011110
+	printl                EXEC Help:
+	printl x - begin hex input
+	printl i - display RAM information
+	printl h - display help text
+	printl q - quit
+	jump exec.ioshell
+
+
+point exec.raminfo
+	printl
+	call printd.signed (var:type.current)
+	printl  RAM words in use
+	printl 65536 RAM words total
+	jump exec.ioshell
+	
+
+point exec.end
+	printl
+	jump zanos.shell.newline
+
+
+point zanos.prog.run.builtins.endoffile

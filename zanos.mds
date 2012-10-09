@@ -1,0 +1,169 @@
+#################
+### Zanita OS ###
+#################
+
+# by Miles Smith
+
+var zanos.keyword
+var zanos.operand
+
+point zanos.init
+	print initiating data types...
+	include header.mds
+	printl  done.
+
+	print importing shell lexicon
+	include zanos.lex.mds
+	printl  done.
+
+	print initiatingw shell...
+	call string.init (0xF)
+	ram write rE zanos.keyword
+	call string.init (0xF)
+	ram write rE zanos.operand
+	printl  done.
+	printl Welcome to Zanita OS, by Miles Smith!
+
+point zanos.shell.escape
+	printl
+
+point zanos.shell.newline
+	call string.erase (var:zanos.keyword)
+	call string.erase (var:zanos.operand)
+	print zos> 
+	
+point zanos.shell.buildkw
+	put rA 32
+	put rB 10
+	put rC 96
+
+	halt
+	input rD
+	output rD
+
+	jump equals rD rC zanos.shell.escape
+	jump equals rD rB zanos.shell.parse
+	jump equals rD rA zanos.shell.buildop
+
+	call string.conc(rD, var:zanos.keyword)
+
+	jump zanos.shell.buildkw
+
+
+point zanos.shell.buildop
+	put rB 10
+	put rC 96
+
+	halt
+	input rD
+	output rD
+
+	jump equals rD rC zanos.shell.escape
+	jump equals rD rB zanos.shell.parse
+
+	call string.conc(rD, var:zanos.operand)
+
+	jump zanos.shell.buildop
+
+point zanos.shell.parse
+
+
+##############
+### PARSER ###
+##############
+
+	# Concatenate keyword and operand strings with null terminator
+	call string.conc (10, var:zanos.keyword)
+	call string.conc (10, var:zanos.operand)
+
+	# Check keyword is 'clear'
+	call string.comp(var:zanos.keyword, var:zanos.lex.clear)
+	put r1 1
+	jump equals rE r1 zanos.prog.clear
+
+	# Check to see if keyword string is 'run'
+	call string.comp(var:zanos.keyword, var:zanos.lex.run)
+	put r1 1
+	jump equals rE r1 zanos.prog.run
+	
+	# Check keyword is 'list'
+
+	call string.comp(var:zanos.keyword, var:zanos.lex.list)
+	put r1 1
+	jump equals rE r1 zanos.prog.list
+
+	# Check keyword is 'help'
+	call string.comp(var:zanos.keyword, var:zanos.lex.help)
+	put r1 1
+	jump equals rE r1 zanos.prog.help
+	
+	# Lexical error message
+	print "
+	call string.print(var:zanos.keyword)
+	printl " is invalid. Try "help".
+
+	jump zanos.shell.newline
+
+############
+### HELP ###
+############
+
+point zanos.prog.help
+	printl      <><> Zanita OS Help <><>
+	printl help       - display this help menu
+	printl run [name] - run specified program
+	printl list       - display a list of programs
+	printl clear      - clear terminal screen
+	printl
+	jump zanos.shell.newline
+
+###########
+### RUN ###
+###########
+
+point zanos.prog.run
+	# Check operand is 'text'
+	call string.comp(var:zanos.operand, var:zanos.lex.text)
+	put r1 1
+	jump equals rE r1 zanos.prog.run.text
+
+	# Check operand is 'ports'
+	call string.comp(var:zanos.operand, var:zanos.lex.ports)
+	put r1 1
+	jump equals rE r1 zanos.prog.run.ports
+
+	# Check operand is 'exec'
+	
+	call string.comp(var:zanos.operand, var:zanos.lex.exec)
+	put r1 1
+	jump equals rE r1 zanos.prog.run.exec
+
+	print Program "
+	call string.print (var:zanos.operand)
+	printl " not found. Sorry...
+	jump zanos.shell.newline
+	include zanos.prog.run.builtins.mds
+
+############
+### LIST ###
+############
+
+point zanos.prog.list
+	printl Programs to run:
+	printl text
+	printl ports
+	printl exec
+	jump zanos.shell.newline
+
+#############
+### CLEAR ###
+#############
+
+point zanos.prog.clear
+	out16 0x8000
+	jump zanos.shell.newline
+
+
+
+
+include all.mds

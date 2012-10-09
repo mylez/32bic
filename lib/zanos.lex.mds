@@ -1,0 +1,84 @@
+#################
+### zanos.lex ###
+#################
+
+# a lexicon
+
+var zanos.lex.run
+var zanos.lex.help
+var zanos.lex.list
+var zanos.lex.clear
+var zanos.lex.text
+var zanos.lex.ports
+var zanos.lex.exec
+
+# Build string "run" in RAM as lexical term
+call string.init (5)
+ram write rE zanos.lex.run
+call string.conc (114, var:zanos.lex.run)
+call string.conc (117, var:zanos.lex.run)
+call string.conc (110, var:zanos.lex.run)
+call string.conc (10, var:zanos.lex.run)
+print .
+
+# Build string "help" in RAM as lexical term
+call string.init (6)
+ram write rE zanos.lex.help
+call string.conc (104, var:zanos.lex.help)
+call string.conc (101, var:zanos.lex.help)
+call string.conc (108, var:zanos.lex.help)
+call string.conc (112, var:zanos.lex.help)
+call string.conc (10, var:zanos.lex.help)
+print .
+
+# Build string "list" in RAM as lexical term
+call string.init (6)
+ram write rE zanos.lex.list
+call string.conc (108, var:zanos.lex.list)
+call string.conc (105, var:zanos.lex.list)
+call string.conc (115, var:zanos.lex.list)
+call string.conc (116, var:zanos.lex.list)
+call string.conc (10, var:zanos.lex.list)
+print .
+
+# Build string "clear" in ram as lexical term
+call string.init (7)
+ram write rE zanos.lex.clear
+call string.conc (99, var:zanos.lex.clear)
+call string.conc (108, var:zanos.lex.clear)
+call string.conc (101, var:zanos.lex.clear)
+call string.conc (97, var:zanos.lex.clear)
+call string.conc (114, var:zanos.lex.clear)
+call string.conc(10, var:zanos.lex.clear)
+print .
+
+# Build string "text" in ram as lexical term
+call string.init (6)
+ram write rE zanos.lex.text
+call string.conc (116, var:zanos.lex.text)
+call string.conc (101, var:zanos.lex.text)
+call string.conc (120, var:zanos.lex.text)
+call string.conc (116, var:zanos.lex.text)
+call string.conc(10, var:zanos.lex.text)
+print .
+
+# Build string "ports" in ram
+call string.init (7)
+ram write rE zanos.lex.ports
+call string.conc (112, var:zanos.lex.ports)
+call string.conc (111, var:zanos.lex.ports)
+call string.conc (114, var:zanos.lex.ports)
+call string.conc (116, var:zanos.lex.ports)
+call string.conc (115, var:zanos.lex.ports)
+call string.conc(10, var:zanos.lex.ports)
+print .
+
+# Build string "exec" in ram as lexical term
+call string.init (6)
+ram write rE zanos.lex.exec
+call string.conc (101, var:zanos.lex.exec)
+call string.conc (120, var:zanos.lex.exec)
+call string.conc (101, var:zanos.lex.exec)
+call string.conc (99, var:zanos.lex.exec)
+call string.conc (10, var:zanos.lex.exec)
+print .

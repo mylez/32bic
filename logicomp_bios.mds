@@ -1,0 +1,174 @@
+#####################
+### LOGICOMP BIOS ###
+#####################
+
+# by Miles Smith
+
+printl LogiComp BIOS
+
+var port1
+var port2
+
+# check port 1 for boot code
+point checkport1
+	put r0 0
+	ram write r0 port1
+	ram write r0 port2
+
+	channel data 1
+	channel address 0
+	put rA 0xb007c0de
+
+	input rB
+	jump notequals rA rB checkport2
+	
+	# If port 1 is bootable, print "Port 1: [boot_name]"
+	
+	channel data 0
+	print Port 1: 
+	channel data 1
+	put r1 1
+	ram write r1 port1
+	
+	point port1read
+	channel address increment
+	input r0
+	
+	# Output chars of boot_name to port 0 (TTY screen)
+	channel data 0
+	output r0
+	channel data 1
+	
+	put r1 10
+	jump notequals r0 r1 port1read
+
+	channel address increment
+	input r0
+	ram write r0 port1
+
+# Check port 2 for boot code
+point checkport2
+	channel address 0
+	put rA 0xb007c0de
+	
+	channel data 2
+	input rB
+	jump notequals rA rB cmdprep
+	
+	
+	# If port 2 is bootable, print "Port 2: [boot_name]"
+	
+	channel data 0
+	print Port 2: 
+	channel data 2
+	put r1 1
+	ram write r1 port2
+	
+	point port2read
+	channel address increment
+	input r0
+	
+	# Output chars of boot_name to port 0 (TTY screen)
+	channel data 0
+	output r0
+	channel data 2
+	
+	put r1 10
+	jump notequals r0 r1 port2read
+	channel address increment
+	input r0
+	ram write r0 port2
+
+# Command line interface prep
+point cmdprep
+	channel data 0
+	ram read r1 port1
+	ram read r2 port2
+	alu + r1 r2 r2
+	alu + r2 r3 r3
+	put r0 0
+	jump equals r3 r0 noboot
+	input r1
+	jump equals r0 r1 bootfrom1
+	
+# Command line interface
+point bioscmd
+	print bios v0.1> 
+	halt
+	input r0
+	output r0
+	printl
+	put r1 0b110001
+	jump equals r0 r1 bootfrom1
+	put r1 0b110010
+	jump equals r0 r1 bootfrom2
+	put r1 0b1101000
+	jump equals r0 r1 bioshelp
+	put r1 0b1110010
+	jump equals r0 r1 checkport1
+
+	printl
+	printl not recognized; try 'h' for help
+	jump bioscmd
+
+# No bootable devices on first scan
+point noboot
+	printl No bootable device found.
+	jump bioscmd
+
+# Initiate boot loader with port 1
+point bootfrom1
+	ram read r1 port1
+	put r0 0
+	jump equals r0 r1 noboot
+	printl booting from port 1
+	printl data transfer may take up to a minute
+	channel data 1
+	channel address 0
+	ram read rA port1
+	put rB 1
+	put rC 0
+	mar write rC
+	channel address 0x10
+	jump bootload
+
+# Initiate boot loader with port 2
+point bootfrom2
+	ram read r1 port2
+	put r0 0
+	jump equals r0 r1 noboot
+	printl booting from port 2...
+	channel data 2
+	channel address 0
+	ram read rA port2
+	put rB 1
+	put rC 0
+	mar write rC
+	channel address 0x10
+	jump bootload
+
+# Copy external program data into internal RAM
+point bootload
+	jump equals rA rC launchram
+	alu - rA rB rA
+	input r0
+	ram write r0
+	mar increment
+	channel address increment
+	jump bootload
+
+# Run the program from address 0000 in RAM
+point launchram
+	channel data 0
+	out16 0x8000
+	exec ram 0
+	halt
+
+
+# Help menu
+point bioshelp
+	printl
+	printl Help:
+	printl enter '1' or '2' to boot from respective ports,
+	printl 'h' to display help or 'r' to rescan ports
+	jump bioscmd

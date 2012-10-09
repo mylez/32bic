@@ -1,0 +1,230 @@
+call type.init
+jump type.endoffile
+
+############
+### TYPE ###
+############
+
+# by Miles Smith
+# defines instantiatable array, stack, and string types
+# type.current is declared by compiler
+
+var string.returnaddress
+var type.returnaddress
+
+point type.init
+	ram read r0 type.current
+	mar read r0
+	put r1 1
+	alu + r0 r1 r0
+	ram write r0 type.current
+	return
+
+point type.updatecurrent
+	ram read r0 type.current
+	alu + rE r0 r0
+	ram write r0 type.current
+	mov rD rE
+	return
+
+###############
+#### STACK ####
+###############
+
+#### FUNCTION CALL
+#### OPERANDS: SELFSIZE
+#### RETURNS: STACK ADDRESS
+point stack.init
+	put r0 1
+	alu + rE r0 rE
+	ram read rD type.current
+	mar write rD
+	ram write rD
+	jump type.updatecurrent
+	ram write rF type.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: VALUE-rB, SELF-rA
+#### RETURNS: VALUE
+point stack.push
+	ram write rF type.returnaddress
+	mov rE rA
+	call opstack.pop
+	mov rE rB
+	mar write rA
+	ram read r0
+	put r1 1
+	alu + r0 r1 r1
+	mar write r1
+	ram write rB
+	mar read r1
+	mar write rA
+	ram write r1
+	mov rB rE
+	ram read rF type.returnaddress
+	return
+
+point stack.pop
+#### FUNCTION CALL
+#### OPERANDS: SELF-rE
+#### RETURNS: POP FROM STACK AT SELF
+	mov rE rD
+	mar write rD
+	ram read r0
+	mar write r0
+	ram read rE
+	put r1 1
+	alu - r0 r1 r1
+	mar write rD
+	ram write r1
+	return
+
+###############
+#### ARRAY ####
+###############
+
+point array.init
+#### FUNCTION CALL
+#### OPERANDS: SELFSIZE
+#### RETURNS ARRAY SELFADDRESS
+	ram read r0 type.current
+	mar write r0
+	mov r0 rD
+	jump type.updatecurrent
+
+point array.insert
+#### FUNCTION CALL
+#### OPERANDS: VALUE, INDEX, SELF
+	ram write rF type.returnaddress
+	# get SELF (array address)
+	mov rE rA
+	# Pop array INDEX
+	call opstack.pop
+	mov rE rB
+	# Pop VALUE
+	call opstack.pop
+	mov rE rC
+	alu + rA rB rA
+	mar write rA
+	ram write rC
+	ram read rF type.returnaddress
+	return
+
+point array.read
+#### FUNCTION CALL
+#### OPERANDS: INDEX, SELF
+	ram write rF type.returnaddress
+	mov rE rA
+	call opstack.pop
+	mov rE rB
+	alu + rA rB rA
+	mar write rA
+	ram read rE
+	ram read rF type.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: SELF ADDR - rE
+#### RETURNS: VOID
+point array.erase
+	mar write rE
+	ram read rE
+	mar write rE
+	ram write rE
+	return
+
+##############
+### STRING ###
+##############
+
+#### FUNCTION CALL
+#### OPERANDS: SELFSIZE
+#### RETURNS: SELF ADDRESS
+point string.init
+	ram write rF type.returnaddress
+	call array.init
+	mar write rE
+	ram write rE
+	ram read rF type.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: VALUE-rB, SELF-rA
+point string.conc
+	ram write rF type.returnaddress
+	mov rE rA
+	call opstack.pop
+	mov rE rB
+	mar write rA
+	ram read rC
+	mar write rC
+	mar increment
+	mar read rC
+	ram write rB
+	mar write rA
+	ram write rC
+	ram read rF type.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: SELF-rE
+#### RETURNS: STRING LENGTH
+point string.print
+	ram write rF string.returnaddress
+	mar write rE
+	put r1 10
+	point string.print.loop
+	mar increment
+	ram read rE
+	jump equals r1 rE string.print.eof
+	output rE
+	jump string.print.loop
+
+point string.print.eof
+	mar read rE
+	ram read rF string.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: ADDR A rA, ADDR B rB
+#### RETURNS: 0 or 1
+point string.comp
+ram write rF string.returnaddress
+mov rE rB
+call opstack.pop
+mov rE rA
+put rE 0
+put r1 1
+put r2 10
+
+point string.comp.main
+	alu + rA r1 rA
+	alu + rB r1 rB
+	mar write rA
+	ram read rC
+	mar write rB
+	ram read rD
+	jump notequals rC rD string.comp.false
+	jump equals rC r2 string.comp.true
+	jump string.comp.main
+
+	point string.comp.false
+		ram read rF string.returnaddress
+		return
+
+	point string.comp.true
+		put rE 1
+
+	ram read rF string.returnaddress
+	return
+
+#### FUNCTION CALL
+#### OPERANDS: SELF ADDR - rE
+#### RETURNS: VOID
+point string.erase
+	mar write rE
+	ram write rE
+	return
+
+point type.endoffile

@@ -1,0 +1,3 @@
+call type.init
+call opstack.init
+
