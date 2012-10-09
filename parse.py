@@ -1,8 +1,12 @@
-      ##############################
-      #####     Zanita ASM      ####
-      #####   by Miles Smith    ####
-      ##############################
+"""
+This is some junky old python from the 32 Bit Integer Computer days
 
+One of my first forays into the computer sciences
+
+Not the neatest code, but it does what it's supposed to
+
+- Miles
+"""
 def makehex(msb='', sra='0', srb='0', dr='', alu = '', op='00'):
     token = {'':'', 'and': '5', 'random': '4', 'xor': '7', '-': '1', 'mask': 'a', '<<': 'b', '>>': 'c', '+': '0', 'not': '8', '*': '2', '/': '3', 'or': '6', 'select': '9'}
     sra, srb, dr = sra.replace('r', ''), srb.replace('r', ''), dr.replace('r', '')
