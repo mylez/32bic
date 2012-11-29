@@ -6,6 +6,7 @@
 * 64 MB onboard RAM (16777216 addressable 32 bit words)
 * Python .mds Assembler Code Included! (assem.py)
 * Existing .mds Libraries for:
+  * BIOS and bootloader
   * data types
   * mathematic functions
   * system operand / general purpose fifo/lifo stacks
