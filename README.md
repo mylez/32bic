@@ -1,4 +1,4 @@
-32 Bit Integer Computer
+32 Bit Integer Computer!
 =======================
 
 * Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim</a> (by Dr. Carl Burch)
@@ -13,3 +13,5 @@
   * hex editing
   * interactive command shell
 
+<img style="display: inline-block" src="http://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Logisim-icon.svg/120px-Logisim-icon.svg.png" />
+<img style="display: inline-block" src="http://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Intel_8080_arch.svg/220px-Intel_8080_arch.svg.png" />
