@@ -8,6 +8,7 @@
 * Existing .mds Libraries for:
   * BIOS and bootloader
   * data types
+  * memory management
   * mathematic functions
   * system operand / general purpose fifo/lifo stacks
   * text editing
