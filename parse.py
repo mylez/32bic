@@ -1,9 +1,9 @@
 """
-This is some junky old python from the 32 Bit Integer Computer days
+This is some old python from the 32 Bit Integer Computer days
 
-One of my first forays into the computer sciences
+Circa October of 2011
 
-Not the neatest code, but it does what it's supposed to
+Not the neatest, but it does what it's supposed to
 
 - Miles
 """
