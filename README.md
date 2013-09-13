@@ -1,7 +1,7 @@
 32 Bit Integer Computer!
 =======================
 
-<h4>Because floating point is too complicated!</h4>
+<h4>Because floating point is too damn complicated!</h4>
 * Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim (Dr. C Burch)</a>
 * Programmed using custom assembly language (.mds)
 * .mds assembler included! (assem.py)
