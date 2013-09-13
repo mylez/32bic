@@ -1,10 +1,12 @@
 32 Bit Integer Computer!
 =======================
 
-* Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim (Dr. C Burch)</a> 
-* Includes CPU, Logic Board, OS ROM, two ROM ports, and text terminal
+<h4>Because floating point is too complicated!</h4>
+* Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim (Dr. C Burch)</a>
+* Programmed using custom assembly language (.mds)
+* .mds assembler included! (assem.py)
+* Includes CPU, Logic Board, OS ROM flash drive, two R/RW ports, and a text terminal
 * 64 MB onboard RAM (16777216 addressable 32 bit words)
-* Python .mds Assembler Code Included! (assem.py)
 * Existing .mds Libraries for:
   * BIOS and bootloader
   * data types
