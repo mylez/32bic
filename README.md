@@ -2,7 +2,7 @@
 =======================
 
 <h4>Because floating point is too damn complicated!</h4>
-* Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim (Dr. C Burch)</a>
+* Built and Simulated in <a href="http://ozark.hendrix.edu/~burch/logisim/">LogiSim</a> (Dr. C Burch)
 * Programmed using custom assembly language (.mds)
 * .mds assembler included! (assem.py)
 * Includes CPU, Logic Board, OS ROM flash drive, two R/RW ports, and a text terminal
